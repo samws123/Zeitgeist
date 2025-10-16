@@ -1,8 +1,9 @@
 "use client"
 
-import { usePrivy, useWallets, useLogin } from "@privy-io/react-auth"
+import { usePrivy, useWallets, useLogin, useLinkAccount } from "@privy-io/react-auth"
 import { Button } from "@/components/ui/button"
-import { useEffect, useMemo, useRef } from "react"
+import DepositPrompt from "@/components/deposit-prompt"
+import { useEffect, useMemo, useRef, useState } from "react"
 
 interface ConnectWalletButtonProps {
   variant?: "default" | "mobile"
@@ -17,6 +18,13 @@ export function ConnectWalletButton({ variant = "default" }: ConnectWalletButton
     return { phantom, solflare }
   }, [])
 
+  const { linkWallet: linkWalletWithCallbacks } = useLinkAccount({
+    onSuccess: () => {
+      // Any wallet successfully linked → show deposit prompt
+      setShowPrompt(true)
+    },
+  })
+
   const { login } = useLogin({
     onComplete: ({ wasAlreadyAuthenticated }) => {
       // After email OTP login completes, immediately prompt to link a wallet (keeps Privy modal context)
@@ -24,7 +32,7 @@ export function ConnectWalletButton({ variant = "default" }: ConnectWalletButton
         const solanaEntries: ("phantom" | "solflare")[] = []
         if (detectedSolana.phantom) solanaEntries.push("phantom")
         if (detectedSolana.solflare) solanaEntries.push("solflare")
-        linkWallet({
+        linkWalletWithCallbacks({
           walletChainType: "ethereum-and-solana",
           walletList: [
             "detected_ethereum_wallets",
@@ -35,12 +43,13 @@ export function ConnectWalletButton({ variant = "default" }: ConnectWalletButton
             ...solanaEntries,
           ],
         })
-        window.location.href = "/deposit"
       }
     },
   })
   const { wallets } = useWallets()
   const hasTriggeredLinkWallet = useRef(false)
+  const hadExternal = useRef<boolean>(false)
+  const [showPrompt, setShowPrompt] = useState<boolean>(false)
 
   useEffect(() => {
     if (authenticated && ready && !hasTriggeredLinkWallet.current) {
@@ -49,22 +58,23 @@ export function ConnectWalletButton({ variant = "default" }: ConnectWalletButton
         walletTypes: wallets.map((w) => w.walletClientType),
       })
 
-      // Check if user has an external wallet (not just the embedded Privy wallet)
       const hasExternalWallet = wallets.some((w) => w.walletClientType !== "privy")
+      if (!hadExternal.current && hasExternalWallet) {
+        hadExternal.current = true
+        setShowPrompt(true)
+      }
 
       if (!hasExternalWallet) {
         hasTriggeredLinkWallet.current = true
         console.log("[v0] No external wallet, calling linkWallet() in 1 second...")
 
-        // Give Privy's login modal time to fully close before opening wallet link modal
         setTimeout(async () => {
           try {
             console.log("[v0] Calling linkWallet()...")
-            await linkWallet()
+            await linkWalletWithCallbacks()
             console.log("[v0] linkWallet() completed successfully")
           } catch (error) {
             console.log("[v0] linkWallet() error:", error)
-            // Reset so user can try again
             hasTriggeredLinkWallet.current = false
           }
         }, 1000)
@@ -100,11 +110,16 @@ export function ConnectWalletButton({ variant = "default" }: ConnectWalletButton
   }
 
   return (
-    <Button
-      onClick={login}
-      className="bg-black hover:bg-black/80 text-white rounded-xl border-2 border-black font-bold shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]"
-    >
-      {displayText}
-    </Button>
+    <>
+      <Button
+        onClick={login}
+        className="bg-black hover:bg-black/80 text-white rounded-xl border-2 border-black font-bold shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]"
+      >
+        {displayText}
+      </Button>
+      {showPrompt && (
+        <DepositPrompt onClose={() => setShowPrompt(false)} depositTarget={wallets[0]?.address as any} />
+      )}
+    </>
   )
 }

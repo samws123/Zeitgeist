@@ -630,14 +630,9 @@ export default function Dashboard() {
               // Dashboard View (existing content)
               <>
                 <div className="mb-8">
-                  {!selectedTrader && (
-                    <div className="flex items-baseline gap-2 mb-1">
-                      <h2 className="text-xl sm:text-2xl font-black">ACTIVE STRATEGIES</h2>
-                      <span className="text-[12px] font-bold text-gray-600">
-                        (the strategies below are examples until you sign up and deposit funds)
-                      </span>
-                    </div>
-                  )}
+                  <div className="flex items-baseline gap-2 mb-1">
+                    <h2 className="text-xl sm:text-2xl font-black">ACTIVE STRATEGIES</h2>
+                  </div>
 
                   {selectedTrader ? (
                     // Trader detail view
