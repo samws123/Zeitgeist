@@ -15,6 +15,7 @@ import {
   Search,
   ChevronDown,
   X,
+  TrendingUp,
 } from "lucide-react"
 import SocialMediaCard from "@/components/social-media-card"
 import MobileNavigation from "@/components/mobile-navigation"
@@ -24,6 +25,7 @@ import { Input } from "@/components/ui/input"
 import { Tabs as TraderTabs, TabsList as TraderTabsList, TabsTrigger as TraderTabsTrigger } from "@/components/ui/tabs"
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu"
 import SettingsModal from "@/components/settings-modal"
+import { XAxis, YAxis, Tooltip, ResponsiveContainer, Area, AreaChart } from "recharts"
 
 export default function Dashboard() {
   const [selectedTrader, setSelectedTrader] = useState<string | null>(null)
@@ -34,6 +36,8 @@ export default function Dashboard() {
   const [selectedTraderForBudget, setSelectedTraderForBudget] = useState<any>(null)
   const [viewingFromLeaderboard, setViewingFromLeaderboard] = useState(false)
   const [showSettingsModal, setShowSettingsModal] = useState(false)
+  const [portfolioTimePeriod, setPortfolioTimePeriod] = useState<"1D" | "1W" | "1M" | "ALL">("ALL")
+  const [selectedPlatform, setSelectedPlatform] = useState<"polymarket" | "kalshi">("polymarket")
 
   const handleCopyClick = (trader: any) => {
     setSelectedTraderForBudget(trader)
@@ -109,6 +113,7 @@ export default function Dashboard() {
       profitLoss: "+$1,320,241",
       volume: "$10,819,700",
       isCopying: false,
+      platform: "polymarket" as const,
     },
     {
       id: 2,
@@ -118,6 +123,7 @@ export default function Dashboard() {
       profitLoss: "+$1,117,526",
       volume: "$12,270,277",
       isCopying: true,
+      platform: "polymarket" as const,
     },
     {
       id: 3,
@@ -127,6 +133,7 @@ export default function Dashboard() {
       profitLoss: "+$803,251",
       volume: "$8,293,004",
       isCopying: false,
+      platform: "kalshi" as const,
     },
     {
       id: 4,
@@ -136,6 +143,7 @@ export default function Dashboard() {
       profitLoss: "+$697,323",
       volume: "$3,824,034",
       isCopying: false,
+      platform: "kalshi" as const,
     },
     {
       id: 5,
@@ -145,8 +153,11 @@ export default function Dashboard() {
       profitLoss: "+$671,323",
       volume: "$1,100,530",
       isCopying: true,
+      platform: "polymarket" as const,
     },
   ]
+
+  const filteredTraders = topTraders.filter((trader) => trader.platform === selectedPlatform)
 
   const categories = [
     "All Categories",
@@ -159,6 +170,26 @@ export default function Dashboard() {
     "Economics",
     "Tech",
   ]
+
+  const portfolioData = [
+    { time: "Jan 1", value: 10000 },
+    { time: "Jan 8", value: 10500 },
+    { time: "Jan 15", value: 11200 },
+    { time: "Jan 22", value: 11800 },
+    { time: "Jan 29", value: 12100 },
+    { time: "Feb 5", value: 13200 },
+    { time: "Feb 12", value: 12800 },
+    { time: "Feb 19", value: 14100 },
+    { time: "Feb 26", value: 15300 },
+    { time: "Mar 5", value: 16200 },
+    { time: "Mar 12", value: 17800 },
+    { time: "Mar 19", value: 18900 },
+  ]
+
+  const currentPortfolioValue = portfolioData[portfolioData.length - 1].value
+  const initialValue = portfolioData[0].value
+  const profitAmount = currentPortfolioValue - initialValue
+  const profitPercentage = ((profitAmount / initialValue) * 100).toFixed(2)
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-purple-50 to-blue-50 p-2 sm:p-4 md:p-8">
@@ -223,7 +254,7 @@ export default function Dashboard() {
             <h1 className="text-2xl sm:text-3xl md:text-4xl font-black tracking-tight">ZEITGEIST</h1>
 
             <span className="hidden lg:block absolute left-1/2 -translate-x-1/2 text-xs sm:text-sm font-bold bg-white px-4 py-1 border-2 border-black rounded-full shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]">
-              Copy Trade Polymarket's Most Profitable Smart Money for Free
+              Copy Trade Polymarket's Most Profitable Whales for Free
             </span>
 
             {/* Mobile menu */}
@@ -253,8 +284,6 @@ export default function Dashboard() {
             </div>
           </div>
         </header>
-
-        
 
         <div className="grid md:grid-cols-[280px_1fr] h-[calc(100vh-6rem)]">
           {/* Sidebar - Desktop only */}
@@ -512,7 +541,30 @@ export default function Dashboard() {
                 ) : (
                   // Leaderboard list view
                   <>
-                    <h2 className="text-3xl sm:text-4xl font-black mb-6">Leaderboard</h2>
+                    <div className="flex items-center justify-between mb-6">
+                      <h2 className="text-3xl sm:text-4xl font-black">Leaderboard</h2>
+
+                      <div className="flex gap-2 bg-white border-4 border-black rounded-xl p-1 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]">
+                        <button
+                          onClick={() => setSelectedPlatform("polymarket")}
+                          className={`px-6 py-2 rounded-lg font-bold transition-all ${
+                            selectedPlatform === "polymarket"
+                              ? "bg-black text-white"
+                              : "text-gray-600 hover:bg-gray-100"
+                          }`}
+                        >
+                          Polymarket
+                        </button>
+                        <button
+                          onClick={() => setSelectedPlatform("kalshi")}
+                          className={`px-6 py-2 rounded-lg font-bold transition-all ${
+                            selectedPlatform === "kalshi" ? "bg-black text-white" : "text-gray-600 hover:bg-gray-100"
+                          }`}
+                        >
+                          Kalshi
+                        </button>
+                      </div>
+                    </div>
 
                     {/* Time period filters */}
                     <div className="flex flex-wrap gap-3 mb-6">
@@ -574,7 +626,7 @@ export default function Dashboard() {
                       </div>
 
                       <div className="divide-y-2 divide-gray-100">
-                        {topTraders.map((trader) => (
+                        {filteredTraders.map((trader) => (
                           <div
                             key={trader.id}
                             className="grid grid-cols-[60px_1fr_180px_180px_140px] gap-4 p-4 hover:bg-gray-50 transition-colors items-center"
@@ -630,9 +682,7 @@ export default function Dashboard() {
               // Dashboard View (existing content)
               <>
                 <div className="mb-8">
-                  <div className="flex items-baseline gap-2 mb-1">
-                    <h2 className="text-xl sm:text-2xl font-black">ACTIVE STRATEGIES</h2>
-                  </div>
+                  <h2 className="text-xl sm:text-2xl font-black mb-4">ACTIVE STRATEGIES</h2>
 
                   {selectedTrader ? (
                     // Trader detail view
@@ -816,12 +866,85 @@ export default function Dashboard() {
                     <div className="mb-10">
                       <h2 className="text-xl sm:text-2xl font-black mb-4">PORTFOLIO PERFORMANCE</h2>
                       <div className="bg-white border-4 border-black rounded-xl shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] p-6">
-                        <div className="h-[300px] flex items-center justify-center text-gray-400">
-                          <div className="text-center">
-                            <div className="text-6xl mb-4">📈</div>
-                            <p className="font-bold text-lg">Portfolio graph coming soon</p>
-                            <p className="text-sm mt-2">Track your performance over time</p>
+                        {/* Header with Profit/Loss label and time period buttons */}
+                        <div className="flex items-start justify-between mb-6">
+                          <div>
+                            <div className="flex items-center gap-2 mb-2">
+                              <TrendingUp className="h-5 w-5 text-green-600" />
+                              <span className="text-sm font-bold text-gray-600">Profit/Loss</span>
+                            </div>
+                            <div className="text-4xl font-black mb-1">${currentPortfolioValue.toLocaleString()}</div>
+                            <div className="text-sm text-gray-600 font-bold">
+                              {portfolioTimePeriod === "ALL" ? "All-Time" : portfolioTimePeriod}
+                            </div>
                           </div>
+
+                          {/* Time period selector buttons */}
+                          <div className="flex gap-2">
+                            {(["1D", "1W", "1M", "ALL"] as const).map((period) => (
+                              <button
+                                key={period}
+                                onClick={() => setPortfolioTimePeriod(period)}
+                                className={`px-4 py-2 rounded-xl font-bold transition-all ${
+                                  portfolioTimePeriod === period
+                                    ? "bg-blue-500 text-white border-2 border-black shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]"
+                                    : "bg-white text-gray-600 border-2 border-gray-300 hover:border-black"
+                                }`}
+                              >
+                                {period}
+                              </button>
+                            ))}
+                          </div>
+                        </div>
+
+                        {/* Chart */}
+                        <div className="h-[300px] w-full">
+                          <ResponsiveContainer width="100%" height="100%">
+                            <AreaChart data={portfolioData}>
+                              <defs>
+                                <linearGradient id="colorValue" x1="0" y1="0" x2="0" y2="1">
+                                  <stop offset="5%" stopColor="#10b981" stopOpacity={0.3} />
+                                  <stop offset="95%" stopColor="#10b981" stopOpacity={0} />
+                                </linearGradient>
+                              </defs>
+                              <XAxis
+                                dataKey="time"
+                                stroke="#666"
+                                style={{ fontSize: "12px", fontWeight: "bold" }}
+                                tickLine={false}
+                              />
+                              <YAxis
+                                stroke="#666"
+                                style={{ fontSize: "12px", fontWeight: "bold" }}
+                                tickLine={false}
+                                tickFormatter={(value) => `$${(value / 1000).toFixed(0)}k`}
+                              />
+                              <Tooltip
+                                contentStyle={{
+                                  backgroundColor: "white",
+                                  border: "2px solid black",
+                                  borderRadius: "8px",
+                                  fontWeight: "bold",
+                                }}
+                                formatter={(value: any) => [`$${value.toLocaleString()}`, "Value"]}
+                              />
+                              <Area
+                                type="monotone"
+                                dataKey="value"
+                                stroke="#10b981"
+                                strokeWidth={3}
+                                fill="url(#colorValue)"
+                              />
+                            </AreaChart>
+                          </ResponsiveContainer>
+                        </div>
+
+                        {/* Profit indicator */}
+                        <div className="mt-4 flex items-center justify-center gap-2 text-green-600 font-bold">
+                          <TrendingUp className="h-5 w-5" />
+                          <span>
+                            +${profitAmount.toLocaleString()} (+{profitPercentage}%)
+                          </span>
                         </div>
                       </div>
                     </div>
