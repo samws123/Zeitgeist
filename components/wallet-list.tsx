@@ -35,7 +35,18 @@ export function WalletList() {
       <div className="flex items-center justify-between">
         <h3 className="text-lg font-black">Your Wallets</h3>
         <Button
-          onClick={() => linkWallet()}
+          onClick={() =>
+            linkWallet({
+              walletChainType: "ethereum-and-solana",
+              walletList: [
+                "detected_ethereum_wallets",
+                "detected_solana_wallets",
+                "metamask",
+                "coinbase_wallet",
+                "walletconnect",
+              ],
+            })
+          }
           className="bg-black text-white hover:bg-gray-800 font-bold rounded-xl border-2 border-black shadow-[3px_3px_0px_0px_rgba(0,0,0,1)]"
         >
           Link Wallet

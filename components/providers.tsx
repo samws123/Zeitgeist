@@ -19,10 +19,25 @@ export function Providers({ children }: { children: React.ReactNode }) {
         supportedChains: [polygon],
         appearance: {
           theme: "light",
-          accentColor: "#000000",
           logo: undefined,
           landingHeader: "ZEITGEIST",
+          loginMessage: "Sign in with email or socials, then connect your wallet",
           showWalletLoginFirst: false,
+          walletChainType: "ethereum-and-solana",
+          walletList: [
+            "detected_wallets",
+            "detected_ethereum_wallets",
+            "detected_solana_wallets",
+            "metamask",
+            "coinbase_wallet",
+            "walletconnect",
+            "rainbow",
+            "zerion",
+            "okx_wallet",
+            "rabby_wallet",
+            "uniswap",
+            "safe",
+          ],
         },
       }}
     >

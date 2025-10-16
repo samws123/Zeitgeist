@@ -1,0 +1,50 @@
+/* Privy neobrutalist theme variables mapped to site tokens */
+:root {
+  /* Corners */
+  --privy-border-radius-sm: 0px;
+  --privy-border-radius-md: 0px;
+  --privy-border-radius-lg: 0px;
+  --privy-border-radius-full: 0px;
+
+  /* Core palette (use site CSS variables; these are valid CSS colors) */
+  --privy-color-background: var(--background);
+  --privy-color-background-2: var(--muted);
+  --privy-color-background-3: var(--muted-foreground);
+
+  --privy-color-foreground: var(--foreground);
+  --privy-color-foreground-2: var(--muted-foreground);
+  --privy-color-foreground-3: var(--muted-foreground);
+  --privy-color-foreground-4: var(--muted-foreground);
+  --privy-color-foreground-accent: var(--primary-foreground);
+
+  --privy-color-accent: var(--primary);
+  --privy-color-accent-light: var(--primary);
+  --privy-color-accent-lightest: var(--primary);
+  --privy-color-accent-dark: var(--primary);
+  --privy-color-accent-darkest: var(--primary);
+
+  --privy-color-success: oklch(0.7 0.17 150);
+  --privy-color-error: oklch(0.6 0.25 25);
+  --privy-color-error-light: oklch(0.95 0.05 25);
+}
+
+/* Optional dark mode override: inherit from .dark token set */
+.dark {
+  --privy-color-background: var(--background);
+  --privy-color-background-2: var(--muted);
+  --privy-color-background-3: var(--muted-foreground);
+
+  --privy-color-foreground: var(--foreground);
+  --privy-color-foreground-2: var(--muted-foreground);
+  --privy-color-foreground-3: var(--muted-foreground);
+  --privy-color-foreground-4: var(--muted-foreground);
+  --privy-color-foreground-accent: var(--primary-foreground);
+
+  --privy-color-accent: var(--primary);
+  --privy-color-accent-light: var(--primary);
+  --privy-color-accent-lightest: var(--primary);
+  --privy-color-accent-dark: var(--primary);
+  --privy-color-accent-darkest: var(--primary);
+}
+
+

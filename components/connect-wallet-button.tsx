@@ -1,15 +1,44 @@
 "use client"
 
-import { usePrivy, useWallets } from "@privy-io/react-auth"
+import { usePrivy, useWallets, useLogin } from "@privy-io/react-auth"
 import { Button } from "@/components/ui/button"
-import { useEffect, useRef } from "react"
+import { useEffect, useMemo, useRef } from "react"
 
 interface ConnectWalletButtonProps {
   variant?: "default" | "mobile"
 }
 
 export function ConnectWalletButton({ variant = "default" }: ConnectWalletButtonProps) {
-  const { ready, authenticated, login, user, linkWallet } = usePrivy()
+  const { ready, authenticated, user, linkWallet } = usePrivy()
+  const detectedSolana = useMemo(() => {
+    if (typeof window === "undefined") return { phantom: false, solflare: false }
+    const phantom = !!(window as any)?.phantom?.solana?.isPhantom
+    const solflare = !!(window as any)?.solflare?.isSolflare
+    return { phantom, solflare }
+  }, [])
+
+  const { login } = useLogin({
+    onComplete: ({ wasAlreadyAuthenticated }) => {
+      // After email OTP login completes, immediately prompt to link a wallet (keeps Privy modal context)
+      if (!wasAlreadyAuthenticated) {
+        const solanaEntries: ("phantom" | "solflare")[] = []
+        if (detectedSolana.phantom) solanaEntries.push("phantom")
+        if (detectedSolana.solflare) solanaEntries.push("solflare")
+        linkWallet({
+          walletChainType: "ethereum-and-solana",
+          walletList: [
+            "detected_ethereum_wallets",
+            "detected_solana_wallets",
+            "metamask",
+            "coinbase_wallet",
+            "walletconnect",
+            ...solanaEntries,
+          ],
+        })
+        window.location.href = "/deposit"
+      }
+    },
+  })
   const { wallets } = useWallets()
   const hasTriggeredLinkWallet = useRef(false)
 
@@ -48,23 +77,15 @@ export function ConnectWalletButton({ variant = "default" }: ConnectWalletButton
     }
   }, [authenticated, ready, wallets, linkWallet])
 
-  if (!ready) {
-    return (
-      <Button
-        disabled
-        className="bg-black hover:bg-black/80 text-white rounded-xl border-2 border-black font-bold shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]"
-      >
-        Loading...
-      </Button>
-    )
-  }
+  // Always render an interactive button; Privy modal handles readiness internally
 
   const formatAddress = (addr: string) => {
     return `${addr.slice(0, 6)}...${addr.slice(-4)}`
   }
 
+  const emailUsername = user?.email?.address ? user.email.address.split("@")[0] : null
   const displayText = authenticated
-    ? user?.email?.address || (wallets[0]?.address ? formatAddress(wallets[0].address) : "Account")
+    ? emailUsername || (wallets[0]?.address ? formatAddress(wallets[0].address) : "Account")
     : "Connect Wallet"
 
   if (variant === "mobile") {

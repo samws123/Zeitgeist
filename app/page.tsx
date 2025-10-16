@@ -223,7 +223,7 @@ export default function Dashboard() {
             <h1 className="text-2xl sm:text-3xl md:text-4xl font-black tracking-tight">ZEITGEIST</h1>
 
             <span className="hidden lg:block absolute left-1/2 -translate-x-1/2 text-xs sm:text-sm font-bold bg-white px-4 py-1 border-2 border-black rounded-full shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]">
-              Copy Trade Polymarket's Most Profitable Whales for Free
+              Copy Trade Polymarket's Most Profitable Smart Money for Free
             </span>
 
             {/* Mobile menu */}
@@ -253,6 +253,8 @@ export default function Dashboard() {
             </div>
           </div>
         </header>
+
+        
 
         <div className="grid md:grid-cols-[280px_1fr] h-[calc(100vh-6rem)]">
           {/* Sidebar - Desktop only */}
@@ -628,7 +630,14 @@ export default function Dashboard() {
               // Dashboard View (existing content)
               <>
                 <div className="mb-8">
-                  <h2 className="text-xl sm:text-2xl font-black mb-4">ACTIVE STRATEGIES</h2>
+                  {!selectedTrader && (
+                    <div className="flex items-baseline gap-2 mb-1">
+                      <h2 className="text-xl sm:text-2xl font-black">ACTIVE STRATEGIES</h2>
+                      <span className="text-[12px] font-bold text-gray-600">
+                        (the strategies below are examples until you sign up and deposit funds)
+                      </span>
+                    </div>
+                  )}
 
                   {selectedTrader ? (
                     // Trader detail view
