@@ -11,11 +11,6 @@ export const metadata: Metadata = {
   title: "ZEITGEIST | Copy Trade Prediction Market Whales",
   description: "Copy Trade Polymarket's Most Profitable Whales for Free",
   generator: "v0.app",
-  icons: {
-    icon: "/favicon.jpg",
-    shortcut: "/favicon.jpg",
-    apple: "/favicon.jpg",
-  },
 }
 
 export default function RootLayout({

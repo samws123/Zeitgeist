@@ -1,6 +1,6 @@
 "use client"
 
-import { usePrivy, useWallets } from "@privy-io/react-auth"
+import { useAuth, useWallets } from "@/lib/auth-context"
 import { useState } from "react"
 import { Button } from "@/components/ui/button"
 import { Copy, ExternalLink } from "lucide-react"
@@ -8,7 +8,7 @@ import { Copy, ExternalLink } from "lucide-react"
 const WALLET_NAMES = ["Chopper", "Maverick", "Nova", "Viper", "Orion", "Rogue", "Echo", "Falcon", "Atlas", "Comet"]
 
 export function WalletList() {
-  const { ready, authenticated, linkWallet } = usePrivy()
+  const { ready, authenticated, linkWallet } = useAuth()
   const { wallets } = useWallets()
   const [copiedAddress, setCopiedAddress] = useState<string | null>(null)
 
@@ -35,18 +35,7 @@ export function WalletList() {
       <div className="flex items-center justify-between">
         <h3 className="text-lg font-black">Your Wallets</h3>
         <Button
-          onClick={() =>
-            linkWallet({
-              walletChainType: "ethereum-and-solana",
-              walletList: [
-                "detected_ethereum_wallets",
-                "detected_solana_wallets",
-                "metamask",
-                "coinbase_wallet",
-                "walletconnect",
-              ],
-            })
-          }
+          onClick={() => linkWallet()}
           className="bg-black text-white hover:bg-gray-800 font-bold rounded-xl border-2 border-black shadow-[3px_3px_0px_0px_rgba(0,0,0,1)]"
         >
           Link Wallet
@@ -88,7 +77,7 @@ export function WalletList() {
                 </a>
               </div>
 
-              {wallet.walletClientType === "privy" && (
+              {wallet.walletClientType === "embedded" && (
                 <div className="mt-2 text-xs font-bold text-gray-500">Embedded Wallet</div>
               )}
             </div>
