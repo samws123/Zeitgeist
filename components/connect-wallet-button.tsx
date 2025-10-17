@@ -101,7 +101,7 @@ export function ConnectWalletButton({ variant = "default" }: ConnectWalletButton
   if (variant === "mobile") {
     return (
       <Button
-        onClick={login}
+        onClick={() => (window.location.href = "/connect")}
         className="bg-black hover:bg-black/80 text-white rounded-xl border-2 border-black font-bold"
       >
         {displayText}
@@ -112,7 +112,7 @@ export function ConnectWalletButton({ variant = "default" }: ConnectWalletButton
   return (
     <>
       <Button
-        onClick={login}
+        onClick={() => (window.location.href = "/connect")}
         className="bg-black hover:bg-black/80 text-white rounded-xl border-2 border-black font-bold shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]"
       >
         {displayText}
